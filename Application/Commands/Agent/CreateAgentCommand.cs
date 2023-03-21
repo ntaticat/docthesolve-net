@@ -29,16 +29,16 @@ public class CreateAgentCommand
                 Password = request.Password
             };
 
-            await _context.Agents.AddAsync(assistant);
+            await _context.Agents.AddAsync(assistant, cancellationToken);
 
-            var result = await _context.SaveChangesAsync();
+            var result = await _context.SaveChangesAsync(cancellationToken);
 
             if (result > 0)
             {
                 return Unit.Value;
             }
 
-            throw new Exception("Error");
+            throw new Exception("Couldn't create the agent");
         }
     }
 }
