@@ -1,8 +1,9 @@
 using System.Reflection;
 using Application.Hubs;
 using Application.Queries;
+using Application.Queries.Ticket;
 using MediatR;
-using Persistance;
+using Persistence;
 
 const string allowClientPolicy = "_allow_frontend_vue";
 
@@ -39,7 +40,7 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
-builder.Services.AddMediatR(typeof(GetIncidencesQuery.Handler).GetTypeInfo().Assembly);
+builder.Services.AddMediatR(typeof(GetTicketsQuery.Handler).GetTypeInfo().Assembly);
 
 var app = builder.Build();
 

@@ -1,24 +1,23 @@
 using Application.Hubs;
-using Domain;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using Persistance;
+using Persistence;
 
-namespace Application.Commands;
+namespace Application.Commands.Ticket;
 
-public class CreateIncidenceCommand
+public class CreateTicketCommand
 {
-    public record IncidenceInfoCommand : IRequest
+    public record CreateTicketCommandDto : IRequest
     {
         public string Title { get; set; }
         public string ShortDescription { get; set; }
         public string LongDescription { get; set; }
         public int Watchers { get; set; }
-        public bool SelectedByAssistant { get; set; }
+        public bool SelectedByAgent { get; set; }
         public bool Solved { get; set; }
     }
     
-    public class Handler : IRequestHandler<IncidenceInfoCommand>
+    public class Handler : IRequestHandler<CreateTicketCommandDto>
     {
         private readonly DocTheSolveNetContext _context;
         private readonly IHubContext<IncidenceHub> _incidenceHub;
@@ -29,25 +28,25 @@ public class CreateIncidenceCommand
             _incidenceHub = incidenceHub;
         }
         
-        public async Task<Unit> Handle(IncidenceInfoCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateTicketCommandDto request, CancellationToken cancellationToken)
         {
-            var incidence = new Incidence
+            var ticket = new Domain.Ticket
             {
                 Title = request.Title,
                 ShortDescription = request.ShortDescription,
                 LongDescription = request.LongDescription,
                 Watchers = request.Watchers,
-                SelectedByAssistant = request.SelectedByAssistant,
+                SelectedByAgent = request.SelectedByAgent,
                 Solved = request.Solved
             };
 
-            await _context.Incidences.AddAsync(incidence);
+            await _context.Tickets.AddAsync(ticket);
 
             var result = await _context.SaveChangesAsync();
 
             if (result > 0)
             {
-                await _incidenceHub.Clients.All.SendAsync("ReceiveMessage", incidence);
+                await _incidenceHub.Clients.All.SendAsync("ReceiveMessage", ticket);
                 return Unit.Value;
             }
 

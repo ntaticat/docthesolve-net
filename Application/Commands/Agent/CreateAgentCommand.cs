@@ -1,18 +1,18 @@
 using Domain;
 using MediatR;
-using Persistance;
+using Persistence;
 
-namespace Application.Commands;
+namespace Application.Commands.Agent;
 
-public class CreateAssistantCommand
+public class CreateAgentCommand
 {
-    public record AssistantInfoCommand : IRequest
+    public record CreateAgentCommandDto : IRequest
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
     }
 
-    public class Handler : IRequestHandler<AssistantInfoCommand>
+    public class Handler : IRequestHandler<CreateAgentCommandDto>
     {
         private readonly DocTheSolveNetContext _context;
 
@@ -21,15 +21,15 @@ public class CreateAssistantCommand
             _context = context;
         }
         
-        public async Task<Unit> Handle(AssistantInfoCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateAgentCommandDto request, CancellationToken cancellationToken)
         {
-            var assistant = new Assistant
+            var assistant = new Domain.Agent
             {
                 Email = request.Email,
                 Password = request.Password
             };
 
-            await _context.Assistants.AddAsync(assistant);
+            await _context.Agents.AddAsync(assistant);
 
             var result = await _context.SaveChangesAsync();
 
