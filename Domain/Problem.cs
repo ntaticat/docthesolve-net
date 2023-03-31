@@ -7,7 +7,7 @@ public class Problem
     public string? Content { get; set; }
 
     public Guid AgentId { get; set; }
-    public Agent? Agent { get; set; }
+    public ApplicationUser? Agent { get; set; }
 
     public ICollection<Solution>? Solutions { get; set; }
     public ICollection<ProblemCategory>? Categories { get; set; }

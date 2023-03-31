@@ -1,8 +1,12 @@
 using System.Reflection;
+using System.Text;
 using Application.Hubs;
 using Application.Queries;
 using Application.Queries.Ticket;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Persistence;
 
 const string allowClientPolicy = "_allow_frontend_vue";
@@ -14,6 +18,22 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DocTheSolveNetContext>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+{
+    ValidateIssuer = false,
+    ValidateAudience = false,
+    ValidateLifetime = true,
+    ValidateIssuerSigningKey = true,
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTKey"])),
+    ClockSkew = TimeSpan.Zero
+});
+
+var identityBuilder = builder.Services.AddIdentityCore<Domain.ApplicationUser>();
+new IdentityBuilder(identityBuilder.UserType, identityBuilder.Services)
+    .AddEntityFrameworkStores<DocTheSolveNetContext>()
+    .AddSignInManager<SignInManager<Domain.ApplicationUser>>()
+    .AddDefaultTokenProviders();
+
 builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {

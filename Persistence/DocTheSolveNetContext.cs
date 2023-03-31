@@ -1,13 +1,14 @@
 using Domain;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence;
 
-public class DocTheSolveNetContext: DbContext
+public class DocTheSolveNetContext: IdentityDbContext<Domain.ApplicationUser, IdentityRole<Guid>, Guid>
 {
-    public DbSet<Agent> Agents { get; set; }
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<Customer> Customers { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<Problem> Problems { get; set; }
     public DbSet<Solution> Solutions { get; set; }
@@ -20,31 +21,32 @@ public class DocTheSolveNetContext: DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // base.OnConfiguring(optionsBuilder);
+        base.OnConfiguring(optionsBuilder);
         optionsBuilder.UseInMemoryDatabase("InMemory");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         // Agent
-        modelBuilder.Entity<Agent>()
-            .HasMany(a => a.Problems)
-            .WithOne(p => p.Agent)
-            .OnDelete(DeleteBehavior.SetNull);
-        modelBuilder.Entity<Agent>()
-            .HasMany(a => a.Solutions)
-            .WithOne(a => a.Agent)
-            .OnDelete(DeleteBehavior.SetNull);
-        modelBuilder.Entity<Agent>()
-            .HasMany(a => a.Tickets)
-            .WithOne(t => t.Agent)
-            .OnDelete(DeleteBehavior.SetNull);
+        // modelBuilder.Entity<ApplicationUser>()
+        //     .HasMany(a => a.Problems)
+        //     .WithOne(p => p.Agent)
+        //     .OnDelete(DeleteBehavior.SetNull);
+        // modelBuilder.Entity<ApplicationUser>()
+        //     .HasMany(a => a.Solutions)
+        //     .WithOne(a => a.Agent)
+        //     .OnDelete(DeleteBehavior.SetNull);
+        // modelBuilder.Entity<ApplicationUser>()
+        //     .HasMany(a => a.Tickets)
+        //     .WithOne(t => t.Agent)
+        //     .OnDelete(DeleteBehavior.SetNull);
         
         // Customer
-        modelBuilder.Entity<Customer>()
-            .HasMany(c => c.Tickets)
-            .WithOne(t => t.Customer)
-            .OnDelete(DeleteBehavior.SetNull);
+        // modelBuilder.Entity<Customer>()
+        //     .HasMany(c => c.Tickets)
+        //     .WithOne(t => t.Customer)
+        //     .OnDelete(DeleteBehavior.SetNull);
         
         // Problem
         modelBuilder.Entity<Problem>()
